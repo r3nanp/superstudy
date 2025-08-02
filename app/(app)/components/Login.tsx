@@ -28,7 +28,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Branding } from "@/components/branding";
-import { login } from "@/lib/actions/login";
+import { login } from "@/lib/actions/auth";
+import { useMutation } from "@tanstack/react-query";
+import { Spinner } from "@/components/spinner";
 
 const LoginSchema = z.object({
   email: z.email({ message: "Email inválido." }),
@@ -37,10 +39,21 @@ const LoginSchema = z.object({
   }),
 });
 
+type LoginFormData = z.infer<typeof LoginSchema>;
+
 export function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const { mutateAsync: loginMutation, isPending } = useMutation({
+    mutationFn: async (data: LoginFormData) => {
+      const formData = new FormData();
+      formData.append("email", data.email);
+      formData.append("password", data.password);
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
+      await login(formData);
+    },
+  });
+
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
@@ -48,12 +61,8 @@ export function Login() {
     },
   });
 
-  async function onSubmit(data: z.infer<typeof LoginSchema>) {
-    const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-
-    await login(formData);
+  async function onSubmit(data: LoginFormData) {
+    await loginMutation(data);
   }
 
   return (
@@ -114,9 +123,13 @@ export function Login() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
-                Entrar
-                <ArrowRightIcon className="size-5" />
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? "Entrando..." : "Entrar"}
+                {isPending ? (
+                  <Spinner className="size-5" />
+                ) : (
+                  <ArrowRightIcon className="size-5" />
+                )}
               </Button>
             </form>
           </Form>

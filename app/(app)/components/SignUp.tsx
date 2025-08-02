@@ -29,7 +29,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Branding } from "@/components/branding";
-import { signup } from "@/lib/actions/login";
+import { signup } from "@/lib/actions/auth";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Spinner } from "@/components/spinner";
 
 const FormSchema = z
   .object({
@@ -47,11 +50,30 @@ const FormSchema = z
     message: "As senhas não coincidem.",
   });
 
+type SignUpFormData = z.infer<typeof FormSchema>;
+
 export function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const { mutateAsync: signupMutation, isPending } = useMutation({
+    mutationFn: async (data: SignUpFormData) => {
+      const formData = new FormData();
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("name", data.name);
+
+      await signup(formData);
+    },
+    onSuccess: () => {
+      toast.success("Conta criada com sucesso!");
+    },
+    onError: () => {
+      toast.error("Erro ao criar conta!");
+    },
+  });
+
+  const form = useForm<SignUpFormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: "",
@@ -60,13 +82,8 @@ export function SignUp() {
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("name", data.name);
-
-    await signup(formData);
+  async function onSubmit(data: SignUpFormData) {
+    await signupMutation(data);
   }
 
   return (
@@ -176,9 +193,13 @@ export function SignUp() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Começar agora
-                <ArrowRightIcon className="size-5" />
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? "Criando conta..." : "Começar agora"}
+                {isPending ? (
+                  <Spinner className="size-5" />
+                ) : (
+                  <ArrowRightIcon className="size-5" />
+                )}
               </Button>
             </form>
           </Form>

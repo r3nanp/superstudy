@@ -1,15 +1,16 @@
 "use client";
+
 import Link from "next/link";
 import {
   BookOpenIcon,
   XMarkIcon,
   Bars3Icon,
 } from "@heroicons/react/24/outline";
-import { Button } from "./button";
+import { Button } from "@/components/button";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-export const Navbar = () => {
+export const MarketingNavbar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -125,5 +126,3 @@ export const Navbar = () => {
     </nav>
   );
 };
-
-export default Navbar;

@@ -1,4 +1,4 @@
-import Navbar from "@/components/navbar";
+import { MarketingNavbar } from "./navbar";
 
 export default function MarketingLayout({
   children,
@@ -7,7 +7,7 @@ export default function MarketingLayout({
 }) {
   return (
     <>
-      <Navbar />
+      <MarketingNavbar />
       {children}
     </>
   );
