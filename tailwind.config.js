@@ -1,6 +1,10 @@
 module.exports = {
   content: ["./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}"],
   theme: {
+    fontFamily: {
+      sans: ["var(--font-inter)", "sans-serif"],
+      display: ["var(--font-poppins)", "sans-serif"],
+    },
     container: {
       center: true,
       padding: "2rem",

@@ -10,7 +10,9 @@ import {
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
+  externalId: uuid("external_id").unique(), // id from supabase auth
   email: varchar("email").notNull().unique(),
+  password: varchar("password").notNull(),
   name: varchar("name").notNull(),
   avatarUrl: text("avatar_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

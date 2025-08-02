@@ -21,29 +21,26 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-slide-up">
-              <Badge variant="secondary" className="w-fit">
-                🎓 AI-Powered Learning
-              </Badge>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                Your Personal
+                Seu hub
                 <span className="bg-gradient-hero bg-clip-text text-transparent block">
-                  Knowledge Hub
+                  de conhecimento
                 </span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Transform your reading into powerful study resources. Aggregate
-                articles from anywhere, store them intelligently, and convert
-                them into summaries, audiobooks, and flashcards.
+                Transforme suas leituras em recursos de estudo poderosos. Agrupe
+                artigos de qualquer lugar, armazene-os inteligentemente e
+                converta-os em resumos, audiobooks e flashcards.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="xl" variant="hero" className="group">
                   <Link href="/app">
-                    Start Learning Today
+                    Comece a estudar hoje
                     <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
                 <Button asChild size="xl" variant="outline">
-                  <Link href="/app">Try Demo</Link>
+                  <Link href="/sign-up">Crie uma conta</Link>
                 </Button>
               </div>
             </div>
@@ -66,17 +63,18 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center space-y-4 mb-16">
             <Badge variant="secondary" className="mx-auto">
-              ✨ Powerful Features
+              ✨ Funcionalidades poderosas
             </Badge>
             <h2 className="text-3xl sm:text-4xl font-bold">
-              Everything you need to
+              Tudo que você precisa para{" "}
               <span className="bg-gradient-hero bg-clip-text text-transparent">
-                master your studies
+                dominar seus estudos
               </span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Our AI transforms your reading materials into personalized study
-              experiences
+              Transforme suas leituras em recursos de estudo poderosos. Agrupe
+              artigos de qualquer lugar, armazene-os inteligentemente e
+              converta-os em resumos, audiobooks e flashcards.
             </p>
           </div>
 
@@ -88,10 +86,12 @@ export default function HomePage() {
                     <div className="bg-gradient-primary p-3 rounded-lg w-fit">
                       <FolderIcon className="h-6 w-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-semibold">AI Summaries</h3>
+                    <h3 className="text-lg font-semibold">
+                      Resumos inteligentes
+                    </h3>
                     <p className="text-muted-foreground">
-                      Get intelligent, context-aware summaries of any article or
-                      document
+                      Obtenha resumos inteligentes e contextuais de qualquer
+                      artigo ou documento
                     </p>
                   </CardContent>
                 </Card>
@@ -101,10 +101,12 @@ export default function HomePage() {
                     <div className="bg-gradient-secondary p-3 rounded-lg w-fit">
                       <PhoneIcon className="h-6 w-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-semibold">Audio Learning</h3>
+                    <h3 className="text-lg font-semibold">
+                      Aprendizado de áudio
+                    </h3>
                     <p className="text-muted-foreground">
-                      Convert any text into high-quality audiobook-style
-                      narration
+                      Converta qualquer texto em narração de audiobook de alta
+                      qualidade
                     </p>
                   </CardContent>
                 </Card>
@@ -114,10 +116,12 @@ export default function HomePage() {
                     <div className="bg-gradient-primary p-3 rounded-lg w-fit">
                       <CreditCardIcon className="h-6 w-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-semibold">Smart Flashcards</h3>
+                    <h3 className="text-lg font-semibold">
+                      Flashcards inteligentes
+                    </h3>
                     <p className="text-muted-foreground">
-                      Auto-generated flashcards with spaced repetition
-                      algorithms
+                      Crie flashcards inteligentes com algoritmos de repetição
+                      espaçada
                     </p>
                   </CardContent>
                 </Card>
@@ -127,10 +131,12 @@ export default function HomePage() {
                     <div className="bg-gradient-secondary p-3 rounded-lg w-fit">
                       <BookOpenIcon className="h-6 w-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-semibold">Q&A Generation</h3>
+                    <h3 className="text-lg font-semibold">
+                      Perguntas e respostas interativas
+                    </h3>
                     <p className="text-muted-foreground">
-                      Interactive questions and answers extracted from your
-                      content
+                      Perguntas e respostas interativas extraídas do seu
+                      conteúdo
                     </p>
                   </CardContent>
                 </Card>
@@ -156,13 +162,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center space-y-4 mb-16">
             <Badge variant="secondary" className="mx-auto">
-              🚀 Simple Process
+              🚀 Processo simples
             </Badge>
             <h2 className="text-3xl sm:text-4xl font-bold">
-              How superstudy
+              Como o superstudy
               <span className="bg-gradient-hero bg-clip-text text-transparent">
                 {" "}
-                transforms your learning
+                transforma seu aprendizado
               </span>
             </h2>
           </div>
@@ -173,10 +179,10 @@ export default function HomePage() {
                 <BoltIcon className="h-10 w-10 text-white" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold">1. Aggregate Content</h3>
+                <h3 className="text-xl font-semibold">1. Agrupe conteúdo</h3>
                 <p className="text-muted-foreground">
-                  Import articles from Substack, RSS feeds, email digests, or
-                  upload directly
+                  Importe artigos de Substack, emails, conecte com seu Notion,
+                  ou faça upload direto
                 </p>
               </div>
             </div>
@@ -186,23 +192,24 @@ export default function HomePage() {
                 <CpuChipIcon className="h-10 w-10 text-white" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold">2. Store & Organize</h3>
+                <h3 className="text-xl font-semibold">
+                  2. Armazene e organize
+                </h3>
                 <p className="text-muted-foreground">
-                  Automatically categorize and store in your personal knowledge
-                  database
+                  Categorize e armazene em seu banco de dados de conhecimento
                 </p>
               </div>
             </div>
 
             <div className="text-center space-y-6 group">
               <div className="bg-gradient-primary p-6 rounded-2xl w-20 h-20 mx-auto flex items-center justify-center group-hover:shadow-glow transition-all duration-300">
-                <FolderIcon className="h-10 w-10 text-white" />
+                <CpuChipIcon className="h-10 w-10 text-white" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold">3. AI Enhancement</h3>
+                <h3 className="text-xl font-semibold">3. Melhore seu estudo</h3>
                 <p className="text-muted-foreground">
-                  Transform into summaries, audio, flashcards, and interactive
-                  Q&A
+                  Converta em resumos, audiobooks, flashcards e perguntas e
+                  respostas interativas
                 </p>
               </div>
             </div>
@@ -214,19 +221,19 @@ export default function HomePage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h2 className="text-3xl sm:text-4xl font-bold">
-            Ready to revolutionize
+            Pronto para revolucionar
             <span className="bg-gradient-hero bg-clip-text text-transparent">
               {" "}
-              your learning?
+              seu aprendizado?
             </span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            Join thousands of students already transforming their study
-            experience with AI
+            Junte-se a milhares de estudantes que já estão transformando sua
+            experiência de estudo com IA
           </p>
           <Button asChild size="xl" variant="hero" className="group">
             <Link href="/app">
-              Start Your Journey
+              Comece sua jornada
               <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>

@@ -3,15 +3,18 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 let supabase: SupabaseClient | null = null;
 
 const createSupabaseClient = () => {
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_API_KEY) {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
     throw new Error("Missing Supabase URL or API Key");
   }
 
   if (supabase) return supabase;
 
   supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_API_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
 
   return supabase;

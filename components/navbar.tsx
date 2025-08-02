@@ -37,19 +37,19 @@ export const Navbar = () => {
                   href="#features"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Features
+                  Funcionalidades
                 </a>
                 <a
                   href="#how-it-works"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  How it Works
+                  Como funciona
                 </a>
                 <Button asChild variant="outline">
-                  <Link href="/app">Try Demo</Link>
+                  <Link href="/app">Comece agora</Link>
                 </Button>
                 <Button asChild variant="hero">
-                  <Link href="/app">Get Started</Link>
+                  <Link href="/sign-up">Crie uma conta</Link>
                 </Button>
               </>
             ) : (
@@ -89,19 +89,19 @@ export const Navbar = () => {
                     href="#features"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    Features
+                    Funcionalidades
                   </a>
                   <a
                     href="#how-it-works"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    How it Works
+                    Como funciona
                   </a>
                   <Button asChild variant="outline" className="w-full">
-                    <Link href="/app">Try Demo</Link>
+                    <Link href="/app">Comece agora</Link>
                   </Button>
                   <Button asChild variant="hero" className="w-full">
-                    <Link href="/app">Get Started</Link>
+                    <Link href="/sign-up">Crie uma conta</Link>
                   </Button>
                 </>
               ) : (

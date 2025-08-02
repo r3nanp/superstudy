@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["700"],
 });
 
 export const metadata: Metadata = {
   title: "superstudy",
-  description: "Your personal knowledge hub",
+  description: "Seu hub de estudos pessoal",
 };
 
 export default function RootLayout({
@@ -25,9 +27,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${poppins.variable} antialiased bg-background text-foreground`}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
