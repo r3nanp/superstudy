@@ -29,10 +29,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Branding } from "@/components/branding";
-import { useMutation } from "@tanstack/react-query";
-import { Spinner } from "@/components/spinner";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { signup } from "@/lib/actions/login";
 
 const FormSchema = z
   .object({
@@ -51,34 +48,8 @@ const FormSchema = z
   });
 
 export function SignUp() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const { mutateAsync: signUp, isPending } = useMutation({
-    mutationFn: async (data: z.infer<typeof FormSchema>) => {
-      const response = await fetch("/api/auth/sign-up", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao criar conta");
-      }
-
-      return response.json();
-    },
-    onSuccess: () => {
-      toast.success("Conta criada com sucesso");
-
-      router.push("/app");
-    },
-    onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "Erro ao criar conta"
-      );
-    },
-  });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -90,7 +61,12 @@ export function SignUp() {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    await signUp(data);
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("name", data.name);
+
+    await signup(formData);
   }
 
   return (
@@ -200,15 +176,9 @@ export function SignUp() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? (
-                  <Spinner className="size-5 animate-spin" />
-                ) : (
-                  <>
-                    Começar agora
-                    <ArrowRightIcon className="size-5" />
-                  </>
-                )}
+              <Button type="submit" className="w-full">
+                Começar agora
+                <ArrowRightIcon className="size-5" />
               </Button>
             </form>
           </Form>

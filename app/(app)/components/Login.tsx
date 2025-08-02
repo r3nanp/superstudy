@@ -28,10 +28,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Branding } from "@/components/branding";
-import { useMutation } from "@tanstack/react-query";
-import { Spinner } from "@/components/spinner";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { login } from "@/lib/actions/login";
 
 const LoginSchema = z.object({
   email: z.email({ message: "Email inválido." }),
@@ -41,49 +38,7 @@ const LoginSchema = z.object({
 });
 
 export function Login() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-
-  const { mutateAsync: login, isPending } = useMutation({
-    mutationFn: async (data: z.infer<typeof LoginSchema>) => {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-
-        if (data.error.code === "INVALID_CREDENTIALS") {
-          toast.error("Email ou senha inválidos");
-          return;
-        }
-
-        throw new Error(data.error.message);
-      }
-
-      return response.json();
-    },
-    onError: (error) => {
-      if (error.message.includes("USER_NOT_FOUND")) {
-        toast.info("Deseja criar uma nova conta?", {
-          action: {
-            label: "Criar conta",
-            onClick: () => {
-              router.push("/sign-up");
-            },
-          },
-        });
-      } else {
-        toast.error(
-          error instanceof Error ? error.message : "Erro ao fazer login"
-        );
-      }
-    },
-    onSuccess: () => {
-      router.push("/app");
-    },
-  });
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -94,7 +49,11 @@ export function Login() {
   });
 
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
-    await login(data);
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+
+    await login(formData);
   }
 
   return (
@@ -155,15 +114,9 @@ export function Login() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? (
-                  <Spinner className="size-5 animate-spin" />
-                ) : (
-                  <>
-                    Entrar
-                    <ArrowRightIcon className="size-5" />
-                  </>
-                )}
+              <Button type="submit" className="w-full">
+                Entrar
+                <ArrowRightIcon className="size-5" />
               </Button>
             </form>
           </Form>
