@@ -3,7 +3,7 @@ import z from "zod";
 
 const schema = z.object({
   type: z.enum(["avatar", "audio", "document"]),
-  userSupabaseId: z.string(),
+  userId: z.string(),
 });
 
 const BUCKET_NAME = process.env.SUPABASE_BUCKET_NAME;
@@ -28,12 +28,12 @@ export const POST = async (request: Request) => {
     }
 
     const supabase = await createClient();
-    const { type, userSupabaseId } = parsedSearchParams;
+    const { type, userId } = parsedSearchParams;
 
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
-    if (!userSupabaseId) {
+    if (!userId) {
       return new Response(
         JSON.stringify({
           error: {
@@ -49,14 +49,14 @@ export const POST = async (request: Request) => {
 
     const getPath = () => {
       if (type === "avatar") {
-        return `avatars/${userSupabaseId}-${Date.now()}-${file.name}`;
+        return `avatars/${userId}-${Date.now()}-${file.name}`;
       }
 
       if (type === "audio") {
-        return `audios/${userSupabaseId}-${Date.now()}-${file.name}`;
+        return `audios/${userId}-${Date.now()}-${file.name}`;
       }
 
-      return `documents/${userSupabaseId}-${Date.now()}-${file.name}`;
+      return `documents/${userId}-${Date.now()}-${file.name}`;
     };
 
     const filePath = getPath();

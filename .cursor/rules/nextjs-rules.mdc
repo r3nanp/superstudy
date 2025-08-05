@@ -1,0 +1,10 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+- Prefer named exports over export default
+- Use server components for data fetching
+- Use React Server Actions for form handling
+- Use URL search params for shareable state
+- Always use kebab-case in file naming like (components/file-upload.tsx)

@@ -2,19 +2,17 @@
 
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
-import { useUser } from "@/hooks/use-user";
-import { httpClient } from "@/lib/http-client";
-import { BookOpenIcon } from "@heroicons/react/24/outline";
-import { useQueryClient } from "@tanstack/react-query";
-import { type ChangeEvent, useCallback, useRef, useState } from "react";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
+import { useState, useRef, useCallback, ChangeEvent } from "react";
 
 const MAX_SIZE_MB = 5;
-const toMegaBytes = (bytes: number) => bytes / 1024 / 1024;
+
+function toMegaBytes(bytes: number) {
+  return bytes / (1024 * 1024);
+}
 
 export function FileUploader() {
-  const { user } = useUser();
-  const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,8 +21,8 @@ export function FileUploader() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (toMegaBytes(file.size) > MAX_SIZE_MB) {
-      toast.error(`O arquivo não pode exceder ${MAX_SIZE_MB}MB`);
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      alert(`O arquivo não pode exceder ${MAX_SIZE_MB}MB`);
       event.target.value = "";
       setSelectedFile(null);
       return;
@@ -35,93 +33,79 @@ export function FileUploader() {
 
   const handleFileUpload = useCallback(async () => {
     if (!selectedFile) return;
+    setIsLoading(true);
 
     try {
-      setIsLoading(true);
-
-      const isAudio = selectedFile.type.startsWith("audio/");
-      const params = new URLSearchParams();
-      params.set("type", isAudio ? "audio" : "avatar");
-      params.set("userSupabaseId", user?.externalId ?? "");
-
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const { data: uploadData, status } = await httpClient.post(
-        "/api/upload",
-        formData,
-        {
-          params,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      // Example upload request
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      if (status !== 200) {
-        throw new Error("Failed to upload file");
-      }
+      if (!res.ok) throw new Error("Upload failed");
 
-      const { status: userStatus } = await httpClient.put(
-        "/api/users",
-        {
-          type: isAudio ? "audio" : "avatar",
-          url: uploadData.url,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      if (userStatus !== 200) {
-        throw new Error("Failed to update user");
-      }
-
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-
+      alert("Upload concluído!");
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
+      alert("Erro no upload");
       console.error(error);
-      toast.error("Erro no upload do arquivo");
     } finally {
       setIsLoading(false);
     }
-  }, [queryClient, selectedFile]);
+  }, [selectedFile]);
 
   return (
-    <div className="space-y-4">
+    <div className="w-full">
+      {/* Hidden file input */}
       <Input
         type="file"
         className="hidden"
         ref={fileInputRef}
         onChange={handleFileSelect}
+        accept="audio/*,image/*,application/pdf"
       />
 
-      <Button
-        variant="hero"
-        className="h-auto p-6 flex-col space-y-2"
-        onClick={() => fileInputRef.current?.click()}
-        disabled={isLoading}
+      {/* Upload Button with Preview */}
+      <div
+        className={cn(
+          "border-2 border-dashed rounded-lg w-full p-6 flex flex-col items-center justify-center text-center cursor-pointer transition",
+          isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-foreground/10"
+        )}
+        onClick={() => !isLoading && fileInputRef.current?.click()}
       >
-        <BookOpenIcon className="h-6 w-6" />
-        <span>{isLoading ? "Carregando..." : "Carregar arquivo"}</span>
-      </Button>
-
-      {selectedFile ? (
-        <div className="text-sm text-gray-600 space-y-2">
-          <p>
-            <strong>Arquivo:</strong> {selectedFile.name}
-          </p>
-          <p>
-            <strong>Tamanho:</strong>{" "}
-            {toMegaBytes(selectedFile.size).toFixed(2)} MB
-          </p>
-          <Button onClick={handleFileUpload} disabled={isLoading}>
-            {isLoading ? "Enviando..." : "Confirmar envio"}
-          </Button>
-        </div>
-      ) : null}
+        {selectedFile ? (
+          <div className="space-y-2">
+            <p className="text-sm font-medium">{selectedFile.name}</p>
+            <p className="text-xs text-gray-500">
+              {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+            </p>
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation(); // prevent triggering file input
+                handleFileUpload();
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? "Enviando..." : "Confirmar envio"}
+            </Button>
+          </div>
+        ) : (
+          <>
+            <ArrowUpTrayIcon className="size-8 text-gray-500 mb-2" />
+            <span className="text-sm font-medium">
+              {isLoading ? "Carregando..." : "Carregar arquivo"}
+            </span>
+            <span className="text-xs text-muted-foreground mt-1">
+              Áudio, imagem ou PDF (máx. {MAX_SIZE_MB}MB)
+            </span>
+          </>
+        )}
+      </div>
     </div>
   );
 }

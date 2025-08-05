@@ -1,11 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/supabase/server";
 import { users as usersTable } from "@/db/schema";
-import bcrypt from "bcryptjs";
+import { compare, hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
@@ -50,7 +49,7 @@ export async function login(formData: FormData) {
     };
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = await compare(password, user.password);
 
   if (!isPasswordValid) {
     return {
@@ -96,7 +95,7 @@ export async function signup(formData: FormData) {
     };
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await hash(password, 10);
 
   await db.insert(usersTable).values({
     email,

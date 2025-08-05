@@ -40,7 +40,7 @@ export default function HomePage() {
                   </Link>
                 </Button>
                 <Button asChild size="xl" variant="outline">
-                  <Link href="/sign-up">Crie uma conta</Link>
+                  <Link href="/signup">Crie uma conta</Link>
                 </Button>
               </div>
             </div>

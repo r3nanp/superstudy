@@ -3,203 +3,204 @@
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
-import { Form } from "@/components/form";
 import { Input } from "@/components/input";
 import {
   BookOpenIcon,
   ClockIcon,
+  InformationCircleIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   SpeakerWaveIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
 import { FileUploader } from "./FileUploader";
+import { useArticles } from "@/hooks/use-articles";
+import type { Article, ArticleStatus } from "@/lib/api/types";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Spinner } from "@/components/spinner";
+import Link from "next/link";
+import { crawlerAction } from "@/lib/actions/crawler";
+import { useActionState } from "react";
+
+const POSSIBLE_STATUS: Record<ArticleStatus, string> = {
+  processing: "Processando",
+  processed: "Processado",
+  error: "Erro",
+};
+
+const ArticleCard = ({ article }: { article: Article }) => {
+  return (
+    <Link
+      href={`/app/${article.slug}`}
+      className="p-4 border rounded-lg hover:shadow-card transition-all duration-300 cursor-pointer"
+    >
+      <div className="flex items-start justify-between mb-2">
+        <h3 className="font-semibold hover:text-primary transition-colors">
+          {article.title}
+        </h3>
+        <Badge variant="default">{POSSIBLE_STATUS[article.status]}</Badge>
+
+        {article.audioUrl && article.status === "processed" ? (
+          <Badge variant="default">Audio</Badge>
+        ) : (
+          <Badge variant="default">Texto</Badge>
+        )}
+      </div>
+      <p className="text-sm text-muted-foreground">{article.description}</p>
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span>{article.source}</span>
+        <div className="flex items-center gap-1">
+          <ClockIcon className="h-3 w-3" />
+          {article.readTime}
+        </div>
+      </div>
+    </Link>
+  );
+};
 
 export function AppHome() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { data, status } = useArticles();
 
-  // Mock data for the demo
-  const recentArticles = [
-    {
-      id: 1,
-      title: "The Future of Artificial Intelligence in Education",
-      source: "TechEd Weekly",
-      readTime: "8 min read",
-      summary: "Exploring how AI is transforming learning experiences...",
-      status: "processed",
-    },
-    {
-      id: 2,
-      title: "Quantum Computing: A Beginner's Guide",
-      source: "Science Today",
-      readTime: "12 min read",
-      summary: "Understanding the principles behind quantum mechanics...",
-      status: "processing",
-    },
-    {
-      id: 3,
-      title: "Sustainable Development Goals 2024",
-      source: "Global Report",
-      readTime: "15 min read",
-      summary: "Progress report on global sustainability initiatives...",
-      status: "processed",
-    },
-  ];
-
-  const studyStats = [
-    { label: "Articles Processed", value: "23", trend: "+5 this week" },
-    { label: "Study Hours", value: "12.5", trend: "+2.3 hours" },
-    { label: "Flashcards Mastered", value: "89", trend: "87% accuracy" },
-    { label: "Audio Sessions", value: "6", trend: "4.2 hrs total" },
-  ];
+  const [state, formAction, isPending] = useActionState(crawlerAction, null);
 
   return (
-    <div className="min-h-screen pt-24 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            Bem-vindo ao seu{" "}
-            <span className="bg-gradient-hero bg-clip-text text-transparent">
-              Hub de Estudo
-            </span>
-          </h1>
-          <p className="text-muted-foreground">
-            Transforme seus artigos em recursos de estudo poderosos
-          </p>
-        </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">
+          Bem-vindo ao seu{" "}
+          <span className="bg-gradient-hero bg-clip-text text-transparent">
+            Hub de Estudo
+          </span>
+        </h1>
+        <p className="text-muted-foreground">
+          Transforme seus artigos em recursos de estudo poderosos
+        </p>
+      </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PlusIcon className="h-5 w-5" />
-                  Carregar arquivo
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid gap-4">
-                  <FileUploader />
-                </div>
+      <div className="grid lg:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PlusIcon className="h-5 w-5" />
+                Carregar arquivo
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="w-full">
+                <FileUploader />
+              </div>
 
+              <form action={formAction}>
+                <label className="text-sm font-medium">Ou cole uma URL</label>
                 <div className="space-y-3">
-                  <label className="text-sm font-medium">Ou cole uma URL</label>
                   <Input
                     placeholder="https://example.com/article"
                     className="w-full"
+                    name="url"
+                    disabled={isPending}
                   />
-                  <Button className="w-full">Process URL</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  {state?.error && (
+                    <p className="text-sm text-destructive">{state.error}</p>
+                  )}
 
-          <div className="space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="relative">
-                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search your content..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Articles */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpenIcon className="h-5 w-5" />
-                  Articles
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {recentArticles.map((article) => (
-                  <div
-                    key={article.id}
-                    className="p-4 border rounded-lg hover:shadow-card transition-all duration-300 cursor-pointer"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold hover:text-primary transition-colors">
-                        {article.title}
-                      </h3>
-                      <Badge
-                        variant={
-                          article.status === "processed"
-                            ? "default"
-                            : "secondary"
-                        }
-                      >
-                        {article.status}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {article.summary}
-                    </p>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{article.source}</span>
-                      <div className="flex items-center gap-1">
-                        <ClockIcon className="h-3 w-3" />
-                        {article.readTime}
+                  <Button className="w-full" type="submit" disabled={isPending}>
+                    {isPending ? (
+                      <div className="flex items-center gap-2">
+                        <Spinner className="size-4" />
+                        Importando...
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+                    ) : (
+                      "Importar via URL"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <SpeakerWaveIcon className="h-5 w-5" />
-                  Audio Content
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 border rounded-lg hover:shadow-card transition-all duration-300 cursor-pointer">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold hover:text-primary transition-colors">
-                      AI in Education Podcast
-                    </h3>
-                    <Badge variant="default">processed</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Deep dive into how artificial intelligence is reshaping
-                    education...
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Tech Talks</span>
-                    <div className="flex items-center gap-1">
-                      <ClockIcon className="h-3 w-3" />
-                      45 min
-                    </div>
+        <div className="space-y-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Pesquisar conteúdo..."
+                  value={searchParams.get("search") || ""}
+                  onChange={(e) => {
+                    const params = new URLSearchParams(searchParams);
+                    params.set("search", e.target.value);
+                    router.push(`?${params.toString()}`);
+                  }}
+                  className="pl-10"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Articles */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpenIcon className="h-5 w-5" />
+                Artigos
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              {data?.articles.length === 0 && status === "pending" && (
+                <div className="flex items-center justify-center">
+                  <Spinner />
+                </div>
+              )}
+
+              {data?.articles.length === 0 && (
+                <div className="flex items-center">
+                  <div className="flex items-center gap-x-2">
+                    <InformationCircleIcon className="h-5 w-5" />
+                    <p className="text-sm text-white">
+                      Carregue um arquivo ou cole uma URL para começar.
+                    </p>
                   </div>
                 </div>
-                <div className="p-4 border rounded-lg hover:shadow-card transition-all duration-300 cursor-pointer">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold hover:text-primary transition-colors">
-                      Quantum Computing Explained
-                    </h3>
-                    <Badge variant="secondary">processing</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Simple explanation of quantum computing principles...
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Science Audio</span>
-                    <div className="flex items-center gap-1">
-                      <ClockIcon className="h-3 w-3" />
-                      28 min
-                    </div>
+              )}
+
+              {data?.articles.map((article) => (
+                <ArticleCard key={article.uuid} article={article} />
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <SpeakerWaveIcon className="h-5 w-5" />
+                Audios gerados
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {data?.articles.length === 0 && status === "pending" && (
+                <div className="flex items-center justify-center">
+                  <Spinner />
+                </div>
+              )}
+
+              {data?.audios.length === 0 && (
+                <div className="flex items-center">
+                  <div className="flex items-center gap-x-2">
+                    <InformationCircleIcon className="h-5 w-5" />
+                    <p className="text-sm text-white">Nenhum audio gerado.</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+
+              {data?.audios.map((audio) => (
+                <ArticleCard key={audio.uuid} article={audio} />
+              ))}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

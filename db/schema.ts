@@ -6,6 +6,7 @@ import {
   timestamp,
   uuid,
   integer,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -19,12 +20,23 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const articleStatus = pgEnum("article_status", [
+  "processing",
+  "processed",
+  "error",
+]);
+
 export const articles = pgTable("articles", {
   id: serial("id").primaryKey(),
   uuid: uuid("uuid").defaultRandom().notNull().unique(),
   title: varchar("title").notNull(),
+  slug: varchar("slug").notNull().unique(),
+  status: articleStatus("status").default("processing").notNull(),
+  source: text("source").notNull(),
+  readTime: integer("read_time").notNull(),
   url: text("url").unique(),
   audioUrl: text("audio_url"),
+  description: varchar("description", { length: 50 }).notNull(),
   summary: text("summary"),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
