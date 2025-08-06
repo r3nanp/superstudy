@@ -53,13 +53,13 @@ export const extractArticle = async (html: string) => {
       model: openai("gpt-4o-mini"),
       schema: extractArticleSchema,
       prompt: `
-        You are a helpful assistant and specialist and copywriter. You are given a html of an article and you need to extract the title, description, content, and read time of the article.
+        You are a helpful assistant and specialist in copywriting. You are given a html of an article and you need to extract the title, description, summary, and approximate read time of the article.
 
         INSTRUCTIONS:
         - The title should be the title of the article.
         - The description should be a short description of the article or the description in the meta tag.
-        - The content should be the content of the article.
-        - The read time should be the read time of the article in minutes.
+        - The summary should be the summary of the article, it should be at least 100 words and should be a good summary of the article.
+        - The read time should be the approximate read time of the article in minutes.
         - Use the schema to guide you on what data to extract.
         - Stick to the data you find in the HTML, and don't make up any information.
         - If you can't find the data, leave the field 'null' or '[]' (for arrays).

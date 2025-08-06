@@ -1,3 +1,4 @@
+import type { ArticleUsage } from "@/lib/types";
 import {
   pgTable,
   serial,
@@ -7,6 +8,7 @@ import {
   uuid,
   integer,
   pgEnum,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -32,15 +34,15 @@ export const articles = pgTable("articles", {
   title: varchar("title").notNull(),
   slug: varchar("slug").notNull().unique(),
   status: articleStatus("status").default("processing").notNull(),
-  source: text("source").notNull(),
+  source: text("source").notNull().unique(),
   readTime: integer("read_time").notNull(),
-  url: text("url").unique(),
   audioUrl: text("audio_url"),
   description: varchar("description", { length: 50 }).notNull(),
   summary: text("summary"),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  usage: jsonb("usage").$type<ArticleUsage>(),
   userId: integer("user_id")
     .references(() => users.id)
     .notNull(),

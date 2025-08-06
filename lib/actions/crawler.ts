@@ -1,8 +1,22 @@
 "use server";
+
+import { eq, getTableColumns } from "drizzle-orm";
+import { z } from "zod";
+
+import { db } from "@/db";
+import { users, articles as articlesTable } from "@/db/schema";
+import { getSession } from "../api/session";
 import { httpClient } from "../http-client";
+import type { CrawlerResponse } from "../crawler/types";
+import type { ArticleStatus } from "../types";
+
+const schema = z.object({
+  url: z.url(),
+});
 
 export const crawlerAction = async (prevState: any, formData: FormData) => {
-  const url = formData.get("url");
+  const { url } = schema.parse(Object.fromEntries(formData));
+  const { session } = await getSession();
 
   if (!url) {
     return {
@@ -10,19 +24,55 @@ export const crawlerAction = async (prevState: any, formData: FormData) => {
     };
   }
 
+  if (!session) {
+    return {
+      error: "Unauthorized",
+    };
+  }
+
   try {
-    const parsedUrl = new URL(url as string);
-    const { data, status } = await httpClient.get(
-      `/api/crawler?url=${parsedUrl.toString()}`
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.externalId, session.user.id));
+
+    if (!user) {
+      return {
+        error: "User not found",
+      };
+    }
+
+    const { data, status } = await httpClient.get<CrawlerResponse>(
+      `/api/crawler?url=${url}`
     );
 
     if (status !== 200) {
       throw new Error("Failed to crawl the website");
     }
 
-    console.log(data);
+    console.dir(data, { depth: null });
 
-    return data;
+    const { id, usage, userId, ...rest } = getTableColumns(articlesTable);
+
+    const result = await db
+      .insert(articlesTable)
+      .values(
+        data.articles.map((article) => {
+          return {
+            ...article,
+            readTime: article.readTime ?? 0,
+            usage: article.usage,
+            status: "processed" as ArticleStatus,
+            source: url.toString(),
+            userId: user.id,
+          };
+        })
+      )
+      .returning({
+        ...rest,
+      });
+
+    return result;
   } catch (error) {
     console.error(error);
 

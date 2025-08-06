@@ -1,13 +1,12 @@
 import { CheerioCrawler } from "@crawlee/cheerio";
 import chalk from "chalk";
 import slugify from "slugify";
+import { extractArticle, getCost, summarizeArticle } from "./llm";
+import type { CrawledArticle } from "@/lib/types";
+import type { CrawlerResponse } from "./types";
 
-export async function crawl(url: string) {
-  const articleFromRequest = new Set<{
-    title: string;
-    description: string;
-    content: string;
-  }>();
+export async function crawl(url: string): Promise<CrawlerResponse | null> {
+  const articleFromRequest = new Set<CrawledArticle>();
 
   const crawler = new CheerioCrawler({
     requestHandler: async ({ request, $ }) => {
@@ -86,18 +85,32 @@ export async function crawl(url: string) {
         }
       }
 
+      const { article, usage } = await extractArticle(content);
+
+      if (!article) {
+        return;
+      }
+
+      const articleUsage = {
+        ...usage,
+        cost: getCost({
+          completionTokens: usage.outputTokens ?? 0,
+          promptTokens: usage.inputTokens ?? 0,
+        }),
+      };
+
+      const slug = slugify(article.title, { lower: true, strict: true });
+
       articleFromRequest.add({
-        title,
-        description,
+        ...article,
+        usage: articleUsage,
         content,
+        slug,
       });
-
-      // const summary = await summarizeArticle(html);
-
-      // console.log(chalk.green(summary.summary));
     },
     errorHandler: async ({ request, error }) => {
       console.log(chalk.red(`Request ${request.url} failed:`, error));
+      articleFromRequest.clear();
     },
   });
 
@@ -112,10 +125,7 @@ export async function crawl(url: string) {
     return {
       url,
       ...result,
-      articles: Array.from(articleFromRequest).map((article) => ({
-        ...article,
-        slug: slugify(article.title, { lower: true, strict: true }),
-      })),
+      articles: Array.from(articleFromRequest),
     };
   } catch (error) {
     console.error(error);

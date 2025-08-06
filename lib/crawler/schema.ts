@@ -8,11 +8,12 @@ export const extractArticleSchema = z.object({
     .string()
     .describe(
       "The description of the article or the description in the meta tag"
-    )
-    .nullish(),
-  content: z.string().describe("The content of the article"),
+    ),
+  summary: z.string().describe("The summary of the article ").min(100),
   readTime: z
     .number()
     .describe("The read time of the article in minutes")
     .nullish(),
 });
+
+export type ExtractArticle = z.infer<typeof extractArticleSchema>;
