@@ -1,7 +1,7 @@
 import { CheerioCrawler } from "@crawlee/cheerio";
 import chalk from "chalk";
 import slugify from "slugify";
-import { extractArticle, getCost, summarizeArticle } from "./llm";
+import { extractArticle, getCost } from "./llm";
 import type { CrawledArticle } from "@/lib/types";
 import type { CrawlerResponse } from "./types";
 

@@ -1,40 +1,6 @@
 import { openai } from "@ai-sdk/openai";
-import { generateObject, generateText, NoObjectGeneratedError } from "ai";
+import { generateObject, NoObjectGeneratedError } from "ai";
 import { extractArticleSchema } from "./schema";
-
-export const summarizeArticle = async (html: string) => {
-  try {
-    console.time("START SUMMARIZING ARTICLE");
-
-    const { text, usage } = await generateText({
-      model: openai("gpt-4o-mini"),
-      prompt: `You are a helpful assistant and specialist and copywriter. You are given a html of an article and you need to generate a summary of the content of the article. Extract relevant information from the article, don't return any HTML.
-
-      INSTRUCTIONS:
-      - Stick to the data you find in the HTML, and don't make up any information.
-
-      ARTICLE:
-      <article>
-      ${html}
-      </article>
-      `,
-    });
-
-    return {
-      summary: text,
-      usage,
-    };
-  } catch (error) {
-    console.error(error);
-
-    return {
-      summary: null,
-      usage: null,
-    };
-  } finally {
-    console.timeEnd("END SUMMARIZING ARTICLE");
-  }
-};
 
 export const getCost = (usage: {
   promptTokens: number;
