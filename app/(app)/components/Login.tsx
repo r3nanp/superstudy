@@ -41,7 +41,7 @@ const LoginSchema = z.object({
 
 type LoginFormData = z.infer<typeof LoginSchema>;
 
-export function Login() {
+export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { mutateAsync: loginMutation, isPending } = useMutation({
     mutationFn: async (data: LoginFormData) => {

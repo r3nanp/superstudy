@@ -18,7 +18,7 @@ export const AppNavbar = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link href="/app/settings">
+          <Link href="/app/me" title="Visualizar seu perfil">
             <Avatar>
               <AvatarImage src={user?.avatarUrl ?? undefined} />
               <AvatarFallback>

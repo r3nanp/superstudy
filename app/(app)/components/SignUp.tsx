@@ -1,7 +1,15 @@
 "use client";
 
+import {
+  ArrowRightIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/button";
@@ -22,16 +30,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/card";
-import {
-  ArrowRightIcon,
-  EyeIcon,
-  EyeSlashIcon,
-} from "@heroicons/react/24/outline";
-import { useState } from "react";
 import { Branding } from "@/components/branding";
 import { signup } from "@/lib/actions/auth";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { Spinner } from "@/components/spinner";
 
 const FormSchema = z
@@ -52,7 +52,7 @@ const FormSchema = z
 
 type SignUpFormData = z.infer<typeof FormSchema>;
 
-export function SignUp() {
+export function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 

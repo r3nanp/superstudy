@@ -24,7 +24,12 @@ export async function GET(request: Request) {
     .from(usersTable)
     .where(eq(usersTable.externalId, session.user.id));
 
-  const { userId: _, id: __, ...content } = getTableColumns(articlesTable);
+  const {
+    id: _,
+    userId: __,
+    usage: ___,
+    ...content
+  } = getTableColumns(articlesTable);
 
   const articles = await db
     .select({

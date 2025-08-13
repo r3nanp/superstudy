@@ -1,4 +1,4 @@
-import { Article } from "../components/Article";
+import { Article } from "../components/article-details";
 
 export default async function ArticlePage({
   params,

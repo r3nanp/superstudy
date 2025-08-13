@@ -1,9 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/badge";
-import { Button } from "@/components/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
-import { Input } from "@/components/input";
 import {
   BookOpenIcon,
   ClockIcon,
@@ -12,14 +8,20 @@ import {
   PlusIcon,
   SpeakerWaveIcon,
 } from "@heroicons/react/24/outline";
-import { FileUploader } from "./FileUploader";
-import { useArticles } from "@/hooks/use-articles";
-import type { Article, ArticleStatus } from "@/lib/api/types";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Spinner } from "@/components/spinner";
-import Link from "next/link";
-import { crawlerAction } from "@/lib/actions/crawler";
 import { useActionState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { Badge } from "@/components/badge";
+import { Button } from "@/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
+import { Input } from "@/components/input";
+import { useArticles } from "@/hooks/use-articles";
+import { Spinner } from "@/components/spinner";
+import { crawlerAction } from "@/lib/actions/crawler";
+import type { Article, ArticleStatus } from "@/lib/types";
+
+import { FileUploader } from "./file-uploader";
 
 const POSSIBLE_STATUS: Record<ArticleStatus, string> = {
   processing: "Processando",
@@ -57,15 +59,15 @@ const ArticleCard = ({ article }: { article: Article }) => {
   );
 };
 
-export function AppHome() {
-  const searchParams = useSearchParams();
+export function Dashboard() {
   const router = useRouter();
-  const { data, status } = useArticles();
+  const searchParams = useSearchParams();
 
+  const { data, status } = useArticles();
   const [state, formAction, isPending] = useActionState(crawlerAction, null);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
           Bem-vindo ao seu{" "}
@@ -101,7 +103,7 @@ export function AppHome() {
                     name="url"
                     disabled={isPending}
                   />
-                  {state?.error && (
+                  {state && "error" in state && (
                     <p className="text-sm text-destructive">{state.error}</p>
                   )}
 
@@ -140,7 +142,6 @@ export function AppHome() {
             </CardContent>
           </Card>
 
-          {/* Articles */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -203,6 +204,6 @@ export function AppHome() {
           </Card>
         </div>
       </div>
-    </div>
+    </>
   );
 }

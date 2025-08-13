@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { SignUp } from "../components/SignUp";
+
+import { SignUpPage } from "../components/signup";
 
 export const metadata: Metadata = {
   title: "Crie uma conta | SuperStudy",
@@ -9,6 +10,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SignUpPage() {
-  return <SignUp />;
+export default function SignUp() {
+  return <SignUpPage />;
 }

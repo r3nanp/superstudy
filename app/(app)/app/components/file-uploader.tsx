@@ -21,7 +21,7 @@ export function FileUploader() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    if (toMegaBytes(file.size) > MAX_SIZE_MB) {
       alert(`O arquivo não pode exceder ${MAX_SIZE_MB}MB`);
       event.target.value = "";
       setSelectedFile(null);
@@ -39,7 +39,6 @@ export function FileUploader() {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      // Example upload request
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -60,7 +59,6 @@ export function FileUploader() {
 
   return (
     <div className="w-full">
-      {/* Hidden file input */}
       <Input
         type="file"
         className="hidden"
@@ -69,7 +67,6 @@ export function FileUploader() {
         accept="audio/*,image/*,application/pdf"
       />
 
-      {/* Upload Button with Preview */}
       <div
         className={cn(
           "border-2 border-dashed rounded-lg w-full p-6 flex flex-col items-center justify-center text-center cursor-pointer transition",
@@ -86,7 +83,7 @@ export function FileUploader() {
             <Button
               size="sm"
               onClick={(e) => {
-                e.stopPropagation(); // prevent triggering file input
+                e.stopPropagation();
                 handleFileUpload();
               }}
               disabled={isLoading}

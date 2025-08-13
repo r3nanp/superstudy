@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   CreditCardIcon,
   ArrowRightIcon,
@@ -11,12 +13,9 @@ import { Button } from "@/components/button";
 import { Badge } from "@/components/badge";
 import { Card, CardContent } from "@/components/card";
 
-import Link from "next/link";
-
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
+    <main className="min-h-screen bg-background">
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-subtle">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -58,7 +57,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section id="features" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center space-y-4 mb-16">
@@ -154,7 +152,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section
         id="how-it-works"
         className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-subtle"
@@ -217,7 +214,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h2 className="text-3xl sm:text-4xl font-bold">
@@ -239,6 +235,6 @@ export default function HomePage() {
           </Button>
         </div>
       </section>
-    </div>
+    </main>
   );
 }

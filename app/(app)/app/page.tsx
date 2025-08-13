@@ -1,6 +1,7 @@
-import { createClient } from "@/supabase/server";
 import { redirect } from "next/navigation";
-import { AppHome } from "./components/AppHome";
+
+import { createClient } from "@/supabase/server";
+import { Dashboard } from "./components/dashboard";
 
 export default async function AppPage() {
   const supabase = await createClient();
@@ -10,5 +11,5 @@ export default async function AppPage() {
     redirect("/login");
   }
 
-  return <AppHome />;
+  return <Dashboard />;
 }
