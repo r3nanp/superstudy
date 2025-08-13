@@ -1,6 +1,7 @@
-import { getArticles } from "@/lib/api/get-articles";
-import { useUser } from "./use-user";
 import { useQuery } from "@tanstack/react-query";
+
+import { getArticles } from "@/modules/articles/api";
+import { useUser } from "./use-user";
 
 export const useArticles = () => {
   const { user } = useUser();

@@ -20,3 +20,10 @@ export type CrawledArticle = ExtractArticle & {
   usage: ArticleUsage;
   content: string;
 };
+
+export type APIErrorResponse = {
+  error: {
+    code: string;
+    message: string;
+  };
+};

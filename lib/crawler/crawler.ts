@@ -10,16 +10,6 @@ export async function crawl(url: string): Promise<CrawlerResponse | null> {
 
   const crawler = new CheerioCrawler({
     requestHandler: async ({ request, $ }) => {
-      // remove the site name from the title, if it exists
-      const title = (
-        $("meta[property='og:title']").attr("content") || $("title").text()
-      ).replace(/^.*? - | |-/g, "");
-
-      const description =
-        $("meta[name='description']")
-          .attr("content")
-          ?.replace(/^.*? - | |-/g, "") || "";
-
       // Remove unwanted elements
       $("script, style, nav, header, footer, aside, form, iframe").remove();
 

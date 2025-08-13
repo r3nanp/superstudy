@@ -1,7 +1,8 @@
-import { getUser } from "@/lib/api/get-user";
-import { createClient } from "@/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
+
+import { getUser } from "@/modules/user/api";
+import { createClient } from "@/supabase/client";
 
 export function useUser() {
   const supabase = createClient();
