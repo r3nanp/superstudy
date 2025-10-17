@@ -14,7 +14,7 @@ const schema = z.object({
   url: z.url(),
 });
 
-export const crawlerAction = async (prevState: any, formData: FormData) => {
+export const crawlerAction = async (prevState: unknown, formData: FormData) => {
   const { url } = schema.parse(Object.fromEntries(formData));
   const { session } = await getSession();
 
