@@ -1,18 +1,24 @@
 import { z } from "zod";
 
 export const extractArticleSchema = z.object({
-  title: z
-    .string()
-    .describe("The title of the article, will be used as the slug"),
+  title: z.string().describe("O título do artigo, será usado como slug"),
   description: z
     .string()
     .describe(
-      "The description of the article or the description in the meta tag"
-    ),
-  summary: z.string().describe("The summary of the article ").min(100),
+      "Uma descrição curta e atrativa do artigo, deve representar bem o conteúdo e despertar interesse. Deve ser único e não deve conter caracteres especiais."
+    )
+    .max(150),
+  summary: z
+    .string()
+    .describe(
+      "O resumo do artigo, deve ser um resumo completo e bem escrito do artigo, com pelo menos 100 palavras."
+    )
+    .min(150),
   readTime: z
     .number()
-    .describe("The read time of the article in minutes")
+    .describe(
+      "O tempo estimado de leitura do artigo em minutos, deve ser um tempo razoável para o artigo. Arredonde para o minuto inteiro mais próximo (ex: 3)."
+    )
     .nullish(),
 });
 

@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { articles as articlesTable, users as usersTable } from "@/db/schema";
-import { getSession } from "@/lib/api/session";
+import { getSession } from "@/modules/auth/api/session";
 import { eq, getTableColumns } from "drizzle-orm";
 import { NextResponse } from "next/server";
 

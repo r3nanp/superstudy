@@ -16,25 +16,57 @@ export const extractArticle = async (html: string) => {
     console.time("START EXTRACTING ARTICLE");
 
     const { object, usage } = await generateObject({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-5-mini"),
       schema: extractArticleSchema,
       prompt: `
-        You are a helpful assistant and specialist in copywriting. You are given a html of an article and you need to extract the title, description, summary, and approximate read time of the article.
+Você é um assistente útil e um especialista em copywriting.
+Você receberá o HTML de um artigo e deve extrair as seguintes informações: título, descrição, resumo e tempo médio de leitura.
 
-        INSTRUCTIONS:
-        - The title should be the title of the article.
-        - The description should be a short description of the article or the description in the meta tag.
-        - The summary should be the summary of the article, it should be at least 100 words and should be a good summary of the article.
-        - The read time should be the approximate read time of the article in minutes.
-        - Use the schema to guide you on what data to extract.
-        - Stick to the data you find in the HTML, and don't make up any information.
-        - If you can't find the data, leave the field 'null' or '[]' (for arrays).
+INSTRUÇÕES:
+- Título:
+  Deve ser o título do artigo ou o conteúdo da tag <title> ou <meta name="title">.
+  Se o título não estiver disponível no HTML, gere um título coerente com base no conteúdo do artigo.
+  O título deve ser único e não deve conter caracteres especiais.
 
-        ARTICLE:
-        <article>
-        ${html}
-        </article>
-      `.trim(),
+- Descrição:
+  Deve ser uma descrição curta e atrativa (estilo meta description).
+  Deve ter menos de 150 caracteres, representar bem o conteúdo e despertar interesse.
+  Deve ser único e não deve conter caracteres especiais.
+
+- Resumo:
+  Deve ser um resumo completo e bem escrito do artigo, com pelo menos 100 palavras.
+  Evite repetições e mantenha linguagem natural, fluida e fiel ao conteúdo do texto.
+
+- Tempo de leitura:
+  Calcule uma estimativa aproximada do tempo de leitura em minutos, considerando 200 palavras por minuto.
+  Arredonde para o minuto inteiro mais próximo (ex: 3).
+
+- Importante:
+  - Use o esquema abaixo como guia para estruturar os dados extraídos.
+  - Não invente informações. Baseie-se apenas no conteúdo do HTML.
+  - Caso alguma informação não possa ser identificada, retorne o campo como null (ou [] para listas).
+  - Toda a resposta deve estar em português do Brasil (pt-BR).
+
+SAÍDA SOLICITADA (JSON):
+Retorne apenas um objeto JSON válido com as seguintes chaves:
+{
+  "title": string | null,
+  "description": string | null,
+  "summary": string | null,
+  "readTime": number | null
+}
+
+REGRAS ADICIONAIS:
+- "description" deve ter no máximo 150 caracteres.
+- "summary" deve conter pelo menos 100 palavras.
+- "readTime" deve ser um número (ex: 1, 2, 3) ou null se não for possível calcular.
+- Não inclua texto explicativo fora do JSON.
+
+ARTIGO:
+<article>
+${html}
+</article>
+`.trim(),
     });
 
     return {

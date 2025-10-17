@@ -1,4 +1,4 @@
-import { LoginPage } from "../components/login";
+import { LoginPage } from "@/modules/auth/components/login";
 
 export const metadata = {
   title: "Login | superstudy",

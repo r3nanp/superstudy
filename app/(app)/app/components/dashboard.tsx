@@ -1,8 +1,11 @@
 "use client";
 
 import {
+  ArrowTopRightOnSquareIcon,
   BookOpenIcon,
   ClockIcon,
+  DocumentTextIcon,
+  ForwardIcon,
   InformationCircleIcon,
   MagnifyingGlassIcon,
   PlusIcon,
@@ -22,40 +25,74 @@ import { crawlerAction } from "@/lib/actions/crawler";
 import type { Article, ArticleStatus } from "@/lib/types";
 
 import { FileUploader } from "./file-uploader";
+import { cn } from "@/lib/cn";
 
-const POSSIBLE_STATUS: Record<ArticleStatus, string> = {
-  processing: "Processando",
-  processed: "Processado",
-  error: "Erro",
-};
+const POSSIBLE_STATUS: Record<ArticleStatus, { label: string; color: string }> =
+  {
+    processing: {
+      label: "Processando",
+      color: "bg-amber-100 text-amber-700 border-amber-200",
+    },
+    processed: {
+      label: "Processado",
+      color: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    },
+    error: { label: "Erro", color: "bg-red-100 text-red-700 border-red-200" },
+  };
 
 const ArticleCard = ({ article }: { article: Article }) => {
-  return (
-    <Link
-      href={`/app/${article.slug}`}
-      className="p-4 border rounded-lg hover:shadow-card transition-all duration-300 cursor-pointer"
-    >
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="font-semibold hover:text-primary transition-colors">
-          {article.title}
-        </h3>
-        <Badge variant="default">{POSSIBLE_STATUS[article.status]}</Badge>
+  const statusInfo = POSSIBLE_STATUS[article.status];
+  const hasAudio = article.audioUrl && article.status === "processed";
 
-        {article.audioUrl && article.status === "processed" ? (
-          <Badge variant="default">Audio</Badge>
-        ) : (
-          <Badge variant="default">Texto</Badge>
-        )}
-      </div>
-      <p className="text-sm text-muted-foreground">{article.description}</p>
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>{article.source}</span>
-        <div className="flex items-center gap-1">
-          <ClockIcon className="h-3 w-3" />
-          {article.readTime}
+  return (
+    <div className="group relative">
+      <Link
+        href={`/app/${article.slug}`}
+        className="block p-6 rounded-lg bg-card border border-border hover:border-primary/40 hover:shadow-glow transition-all duration-300 cursor-pointer overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:to-primary/10 transition-all duration-300 rounded-lg" />
+
+        <div className="relative z-10">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-all duration-300 leading-tight flex-1">
+              {article.title}
+            </h3>
+            <ArrowTopRightOnSquareIcon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-all duration-300 flex-shrink-0 opacity-0 group-hover:opacity-100" />
+          </div>
+
+          <div className="flex items-center gap-2 mb-3">
+            <Badge variant="secondary">{statusInfo.label}</Badge>
+            {hasAudio ? (
+              <Badge variant="default">
+                <SpeakerWaveIcon className="w-3 h-3" />
+                Áudio
+              </Badge>
+            ) : (
+              <Badge variant="default">
+                <DocumentTextIcon className="w-3 h-3" />
+                Texto
+              </Badge>
+            )}
+          </div>
+
+          <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+            {article.description}
+          </p>
+
+          <div className="flex items-center justify-between pt-3 border-t border-border">
+            <span className="text-xs font-medium text-muted-foreground truncate max-w-[60%]">
+              {article.source}
+            </span>
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <ClockIcon className="w-3.5 h-3.5" />
+              <span className="text-xs font-medium">
+                {article.readTime} min
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 };
 

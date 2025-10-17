@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { SignUpPage } from "../components/signup";
+import { SignUpPage } from "@/modules/auth/components/signup";
 
 export const metadata: Metadata = {
   title: "Crie uma conta | SuperStudy",

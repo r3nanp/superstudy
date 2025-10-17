@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/supabase/server";
 import { users as usersTable } from "@/db/schema";
-import { compare, hash } from "bcryptjs";
+import { verify, hash as argonHash } from "argon2";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
@@ -49,7 +49,7 @@ export async function login(formData: FormData) {
     };
   }
 
-  const isPasswordValid = await compare(password, user.password);
+  const isPasswordValid = await verify(user.password, password);
 
   if (!isPasswordValid) {
     return {
@@ -95,7 +95,7 @@ export async function signup(formData: FormData) {
     };
   }
 
-  const hashedPassword = await hash(password, 10);
+  const hashedPassword = await argonHash(password);
 
   await db.insert(usersTable).values({
     email,

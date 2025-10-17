@@ -5,8 +5,8 @@ import { z } from "zod";
 
 import { db } from "@/db";
 import { users, articles as articlesTable } from "@/db/schema";
-import { getSession } from "../api/session";
-import { httpClient } from "../http-client";
+import { getSession } from "@/modules/auth/api/session";
+import { httpClient } from "@/lib/http-client";
 import type { CrawlerResponse } from "../crawler/types";
 import type { ArticleStatus } from "../types";
 
@@ -51,6 +51,12 @@ export const crawlerAction = async (prevState: any, formData: FormData) => {
     }
 
     console.dir(data, { depth: null });
+
+    if (data.articles.length === 0) {
+      return {
+        error: "No articles found",
+      };
+    }
 
     const { id, usage, userId, ...rest } = getTableColumns(articlesTable);
 

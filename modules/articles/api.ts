@@ -15,3 +15,17 @@ export async function getArticles() {
 
   return data;
 }
+
+export async function getArticle(slug: string) {
+  const { data, status } = await httpClient.get<
+    Omit<Article, "userId" | "id" | "usage">
+  >(`/api/articles/${slug}`);
+
+  if (status !== 200) {
+    const error = data as unknown as APIErrorResponse;
+
+    throw new Error(error.error.message, { cause: error.error.code });
+  }
+
+  return data;
+}

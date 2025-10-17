@@ -3,7 +3,7 @@ import { eq, getTableColumns } from "drizzle-orm";
 import { users as usersTable } from "@/db/schema";
 import { db } from "@/db";
 import z from "zod";
-import { getSession } from "@/lib/api/session";
+import { getSession } from "@/modules/auth/api/session";
 
 const schema = z.object({
   type: z.enum(["avatar", "audio"]),
