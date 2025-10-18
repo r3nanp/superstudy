@@ -50,8 +50,6 @@ export const crawlerAction = async (prevState: unknown, formData: FormData) => {
       throw new Error("Failed to crawl the website");
     }
 
-    console.dir(data, { depth: null });
-
     if (data.articles.length === 0) {
       return {
         error: "No articles found",
@@ -68,7 +66,7 @@ export const crawlerAction = async (prevState: unknown, formData: FormData) => {
             ...article,
             readTime: article.readTime ?? 0,
             usage: article.usage,
-            status: "processed" as ArticleStatus,
+            status: "processing" as ArticleStatus,
             source: url.toString(),
             userId: user.id,
           };

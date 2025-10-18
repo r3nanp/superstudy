@@ -1,30 +1,54 @@
 "use client";
 
 import { useState } from "react";
+import { format } from "date-fns";
 import {
   ClockIcon,
   PlayIcon,
   PauseIcon,
-  ShareIcon,
-  BookmarkIcon,
-  ArrowLeftIcon,
-  EllipsisVerticalIcon,
   SpeakerWaveIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
-import { getArticle } from "../api";
-import { useQuery } from "@tanstack/react-query";
+
+import { ArticleHeader } from "./article-header";
+import { useUser } from "@/hooks/use-user";
+import { httpClient } from "@/lib/http-client";
+import { toast } from "sonner";
+import { useArticle } from "../hooks/use-article";
 
 export const Article = ({ slug }: { slug: string }) => {
+  const { user } = useUser();
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
+  const [audioProcessing, setAudioProcessing] = useState(false);
 
-  const { data: article, status } = useQuery({
-    queryKey: ["article", slug],
-    queryFn: () => getArticle(slug),
-  });
+  const { data: article, status, refetch } = useArticle(slug);
 
   const hasAudio = !!article?.audioUrl;
+
+  const handleGenerateAudio = async () => {
+    setAudioProcessing(true);
+    try {
+      const searchParams = new URLSearchParams({
+        articleSlug: slug,
+        userId: user?.externalId ?? "",
+      });
+
+      await httpClient.post(`/api/audio?${searchParams.toString()}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      setTimeout(() => {
+        refetch();
+        setAudioProcessing(false);
+      }, 2000);
+    } catch (err) {
+      setAudioProcessing(false);
+      toast.error("Erro ao gerar áudio");
+    }
+  };
 
   if (status === "pending") {
     return <div>Carregando...</div>;
@@ -36,31 +60,7 @@ export const Article = ({ slug }: { slug: string }) => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <a
-              href="/app"
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-all duration-300"
-            >
-              <ArrowLeftIcon className="w-4 h-4" />
-              <span className="text-sm font-medium">Voltar</span>
-            </a>
-            <div className="flex items-center gap-2">
-              <button className="p-2 rounded-lg hover:bg-accent transition-all duration-300 text-muted-foreground hover:text-foreground">
-                <BookmarkIcon className="w-5 h-5" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-accent transition-all duration-300 text-muted-foreground hover:text-foreground">
-                <ShareIcon className="w-5 h-5" />
-              </button>
-              <button className="p-2 rounded-lg hover:bg-accent transition-all duration-300 text-muted-foreground hover:text-foreground">
-                <EllipsisVerticalIcon className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <ArticleHeader />
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
@@ -94,18 +94,11 @@ export const Article = ({ slug }: { slug: string }) => {
 
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span className="font-medium">{article.source}</span>
-            <span>
-              {new Date(article.createdAt).toLocaleDateString("pt-BR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
+            <span>{format(article.createdAt, "dd/MM/yyyy HH:mm")}</span>
           </div>
         </div>
 
-        {/* Audio Player */}
-        {hasAudio && (
+        {hasAudio && article.audioUrl ? (
           <div className="mb-8 p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
             <div className="flex items-center gap-4 mb-4">
               <button
@@ -137,15 +130,54 @@ export const Article = ({ slug }: { slug: string }) => {
                     style={{ width: `${audioProgress * 100}%` }}
                   />
                 </div>
+
+                <audio
+                  src={article.audioUrl}
+                  onTimeUpdate={(e) => {
+                    if (e instanceof HTMLAudioElement) {
+                      setAudioProgress((e.currentTime / article.readTime) * 60);
+                    }
+                  }}
+                  onEnded={() => setIsPlaying(false)}
+                />
               </div>
               <button className="p-2 rounded-lg hover:bg-primary/10 transition-smooth text-muted-foreground hover:text-primary">
                 <SpeakerWaveIcon className="w-5 h-5" />
               </button>
             </div>
           </div>
+        ) : (
+          <div className="mb-8 p-6 rounded-lg bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/20">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 flex items-center justify-center rounded-full bg-secondary/40">
+                <SpeakerWaveIcon className="w-5 h-5 text-secondary-foreground" />
+              </div>
+              <div className="flex-1">
+                <span className="text-sm font-medium text-foreground">
+                  O áudio ainda não foi gerado para este artigo.
+                </span>
+                <div className="mt-2 text-xs text-muted-foreground">
+                  Clique no botão abaixo para gerar o áudio.
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center mt-4">
+              <button
+                onClick={handleGenerateAudio}
+                className="px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/70 flex items-center justify-center transition-smooth shadow text-secondary-foreground font-medium text-sm cursor-pointer"
+                disabled={audioProcessing}
+              >
+                {audioProcessing ? "Gerando áudio..." : "Gerar áudio"}
+              </button>
+            </div>
+            {audioProcessing ? (
+              <div className="text-xs text-muted-foreground mt-2">
+                O áudio está sendo gerado. Isso pode levar alguns segundos...
+              </div>
+            ) : null}
+          </div>
         )}
 
-        {/* Article Content */}
         <article className="prose prose-invert max-w-none">
           <div className="text-base text-foreground/90 leading-relaxed space-y-6 prose">
             {article.content}
