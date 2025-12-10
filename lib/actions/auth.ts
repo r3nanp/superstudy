@@ -1,13 +1,12 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
-import { createClient } from "@/supabase/server";
-import { users as usersTable } from "@/db/schema";
-import { verify, hash as argonHash } from "argon2";
+import { hash as argonHash, verify } from "argon2";
 import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
+import { users as usersTable } from "@/db/schema";
+import { createClient } from "@/supabase/server";
 
 const signupSchema = z.object({
   email: z.email(),

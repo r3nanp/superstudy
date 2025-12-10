@@ -1,7 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import {
-  experimental_generateSpeech as generateSpeech,
   type Experimental_SpeechResult,
+  experimental_generateSpeech as generateSpeech,
 } from "ai";
 
 export type SpeechResult = Experimental_SpeechResult;

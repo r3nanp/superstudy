@@ -20,10 +20,16 @@ export const ArticleHeader = () => {
             <span className="text-sm font-medium">Voltar</span>
           </Link>
           <div className="flex items-center gap-2">
-            <button className="p-2 rounded-lg hover:bg-accent transition-all duration-300 text-muted-foreground hover:text-foreground cursor-pointer">
+            <button
+              type="button"
+              className="p-2 rounded-lg hover:bg-accent transition-all duration-300 text-muted-foreground hover:text-foreground cursor-pointer"
+            >
               <BookmarkIcon className="w-5 h-5" />
             </button>
-            <button className="p-2 rounded-lg hover:bg-accent transition-all duration-300 text-muted-foreground hover:text-foreground cursor-pointer">
+            <button
+              type="button"
+              className="p-2 rounded-lg hover:bg-accent transition-all duration-300 text-muted-foreground hover:text-foreground cursor-pointer"
+            >
               <ShareIcon className="w-5 h-5" />
             </button>
           </div>

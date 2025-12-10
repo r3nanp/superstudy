@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { eq, getTableColumns } from "drizzle-orm";
-import { users as usersTable } from "@/db/schema";
-import { db } from "@/db";
+import { type NextRequest, NextResponse } from "next/server";
 import z from "zod";
+import { db } from "@/db";
+import { users as usersTable } from "@/db/schema";
 import { getSession } from "@/modules/auth/api/session";
 
 const schema = z.object({

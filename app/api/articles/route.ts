@@ -1,8 +1,8 @@
+import { eq, getTableColumns } from "drizzle-orm";
+import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { articles as articlesTable, users as usersTable } from "@/db/schema";
 import { getSession } from "@/modules/auth/api/session";
-import { eq, getTableColumns } from "drizzle-orm";
-import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { session } = await getSession();

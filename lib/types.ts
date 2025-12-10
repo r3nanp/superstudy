@@ -1,7 +1,7 @@
-import type { InferEnum, InferSelectModel } from "drizzle-orm";
 import type { LanguageModelUsage } from "ai";
+import type { InferEnum, InferSelectModel } from "drizzle-orm";
 
-import { articles, articleStatus, users } from "@/db/schema";
+import type { articleStatus, articles, users } from "@/db/schema";
 import type { ExtractArticle } from "./crawler/schema";
 
 export type User = Omit<InferSelectModel<typeof users>, "password">;

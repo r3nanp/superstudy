@@ -1,20 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { format } from "date-fns";
 import {
   ClockIcon,
-  PlayIcon,
-  PauseIcon,
-  SpeakerWaveIcon,
   DocumentTextIcon,
+  SpeakerWaveIcon,
 } from "@heroicons/react/24/outline";
+import { format } from "date-fns";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { ArticleHeader } from "./article-header";
+import { Audio } from "@/components/audio";
 import { useUser } from "@/hooks/use-user";
 import { httpClient } from "@/lib/http-client";
-import { toast } from "sonner";
 import { useArticle } from "../hooks/use-article";
+import { ArticleHeader } from "./article-header";
 
 export const Article = ({ slug }: { slug: string }) => {
   const { user } = useUser();
@@ -100,7 +99,12 @@ export const Article = ({ slug }: { slug: string }) => {
 
         {hasAudio && article.audioUrl ? (
           <div className="mb-8 p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
-            <div className="flex items-center gap-4 mb-4">
+            <Audio
+              audio={article.audioUrl}
+              readTime={article.readTime}
+              onTimeUpdate={setAudioProgress}
+            />
+            {/* <div className="flex items-center gap-4 mb-4">
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="w-12 h-12 rounded-full bg-primary hover:bg-primary-glow flex items-center justify-center transition-smooth shadow-glow"
@@ -138,13 +142,14 @@ export const Article = ({ slug }: { slug: string }) => {
                       setAudioProgress((e.currentTime / article.readTime) * 60);
                     }
                   }}
+                  controls
                   onEnded={() => setIsPlaying(false)}
                 />
               </div>
               <button className="p-2 rounded-lg hover:bg-primary/10 transition-smooth text-muted-foreground hover:text-primary">
                 <SpeakerWaveIcon className="w-5 h-5" />
               </button>
-            </div>
+            </div> */}
           </div>
         ) : (
           <div className="mb-8 p-6 rounded-lg bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/20">
@@ -163,6 +168,7 @@ export const Article = ({ slug }: { slug: string }) => {
             </div>
             <div className="flex items-center mt-4">
               <button
+                type="button"
                 onClick={handleGenerateAudio}
                 className="px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/70 flex items-center justify-center transition-smooth shadow text-secondary-foreground font-medium text-sm cursor-pointer"
                 disabled={audioProcessing}

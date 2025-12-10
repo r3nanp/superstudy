@@ -1,8 +1,8 @@
 import { CheerioCrawler } from "@crawlee/cheerio";
 import chalk from "chalk";
 import slugify from "slugify";
-import { extractArticle, getCost } from "./llm";
 import type { CrawledArticle } from "@/lib/types";
+import { extractArticle, getCost } from "./llm";
 import type { CrawlerResponse } from "./types";
 
 export async function crawl(url: string): Promise<CrawlerResponse | null> {

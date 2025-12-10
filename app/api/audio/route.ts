@@ -1,11 +1,11 @@
+import { eq } from "drizzle-orm";
+import { after, NextResponse } from "next/server";
+import z from "zod";
 import { db } from "@/db";
 import { articles as articlesTable, users as usersTable } from "@/db/schema";
 import { generateAudioFromText } from "@/lib/audio";
 import { httpClient } from "@/lib/http-client";
-import { checkTokenLimit, splitTextSmart } from "@/lib/tokenizer";
-import { eq } from "drizzle-orm";
-import { after, NextResponse } from "next/server";
-import z from "zod";
+import { checkTokenLimit } from "@/lib/tokenizer";
 
 export const runtime = "nodejs";
 
